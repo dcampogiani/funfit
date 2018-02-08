@@ -23,14 +23,15 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
     testImplementation 'com.squareup.retrofit2:converter-jackson:2.3.0'
+    testImplementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
     testImplementation 'junit:junit:4.12'
 
 
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.7"
+    kotlinOptions.jvmTarget = "1.6"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.7"
+    kotlinOptions.jvmTarget = "1.6"
 }
