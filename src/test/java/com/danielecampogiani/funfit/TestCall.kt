@@ -14,12 +14,10 @@ class TestCall {
         val call = api.getUser("dcampogiani").map { it.login.toUpperCase() }
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> {
-                assertEquals("DCAMPOGIANI", response.body)
-            }
-            is Response.Error -> fail()
-        }
+        response.fold(
+                { fail() },
+                { assertEquals("DCAMPOGIANI", it.body) })
+
     }
 
     @Test
@@ -27,12 +25,9 @@ class TestCall {
         val call = api.getStargazers("dcampogiani", "NotValid").map { "Dummy Mapping" }
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> fail()
-            is Response.Error -> {
-                assertEquals(404, response.code)
-            }
-        }
+        response.fold(
+                { assertEquals(404, response.code) },
+                { fail() })
     }
 
     @Test
@@ -42,12 +37,10 @@ class TestCall {
         }
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> {
-                assertEquals("mattpoggi", response.body.first().login)
-            }
-            is Response.Error -> fail()
-        }
+        response.fold(
+                { fail() },
+                { assertEquals("mattpoggi", it.body.first().login) })
+
     }
 
     @Test
@@ -57,11 +50,8 @@ class TestCall {
         }
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> fail()
-            is Response.Error -> {
-                assertEquals(404, response.code)
-            }
-        }
+        response.fold(
+                { assertEquals(404, response.code) },
+                { fail() })
     }
 }

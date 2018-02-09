@@ -7,9 +7,10 @@ class FlatMapCall<A, B>(
 
     override fun execute(): Response<B> {
         val response = originalCall.execute()
-        return when (response) {
-            is Response.Error -> Response.Error(response.errorBody, response.code, response.headers, response.message, response.raw)
-            is Response.Success -> f(response.body).execute()
-        }
+
+        return response.fold(
+                { Response.Error(it.errorBody, it.code, it.headers, it.message, it.raw) },
+                { f(it.body).execute() }
+        )
     }
 }

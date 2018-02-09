@@ -13,13 +13,12 @@ class TestResponse {
         val call = api.getStargazers("dcampogiani", "AndroidFunctionalValidation")
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> {
-                assertEquals(200, response.code)
-                assertTrue(response.body.isNotEmpty())
-            }
-            is Response.Error -> fail()
-        }
+        response.fold(
+                { fail() },
+                {
+                    assertEquals(200, response.code)
+                    assertTrue(it.body.isNotEmpty())
+                })
     }
 
     @Test
@@ -27,12 +26,9 @@ class TestResponse {
         val call = api.getStargazers("dcampogiani", "NotValid")
         val response = call.execute()
 
-        when (response) {
-            is Response.Success -> fail()
-            is Response.Error -> {
-                assertEquals(404, response.code)
-            }
-        }
+        response.fold(
+                { assertEquals(404, response.code) },
+                { fail() })
     }
 
     @Test
@@ -41,13 +37,12 @@ class TestResponse {
         val response = call.execute()
         val mappedResponse = response.map { it.map { it.copy(userName = it.userName.toUpperCase()) } }
 
-        when (mappedResponse) {
-            is Response.Success -> {
-                assertEquals(200, mappedResponse.code)
-                assertEquals("AJOZ", mappedResponse.body.first().userName)
-            }
-            is Response.Error -> fail()
-        }
+        mappedResponse.fold(
+                { fail() },
+                {
+                    assertEquals(200, it.code)
+                    assertEquals("AJOZ", it.body.first().userName)
+                })
     }
 
     @Test
@@ -56,12 +51,10 @@ class TestResponse {
         val response = call.execute()
         val mappedResponse = response.map { "Dummy Mapping" }
 
-        when (response) {
-            is Response.Success -> fail()
-            is Response.Error -> {
-                assertEquals(404, mappedResponse.code)
-            }
-        }
+        mappedResponse.fold(
+                { assertEquals(404, response.code) },
+                { fail() })
+
     }
 
 }

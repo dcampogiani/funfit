@@ -10,12 +10,6 @@ sealed class Response<out A>(
         open val raw: okhttp3.Response
 ) {
 
-    fun <B> map(f: (A) -> B): Response<B> {
-        return when (this) {
-            is Response.Success -> Response.Success(f(body), code, headers, message, raw)
-            is Response.Error -> Response.Error(errorBody, code, headers, message, raw)
-        }
-    }
 
     data class Success<A>(
             val body: A,
