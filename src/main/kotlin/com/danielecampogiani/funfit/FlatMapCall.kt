@@ -1,9 +1,15 @@
 package com.danielecampogiani.funfit
 
+import okhttp3.Request
+
 class FlatMapCall<A, B>(
         private val originalCall: Call<A>,
         private val f: (A) -> Call<B>
 ) : Call<B> {
+
+    override fun cancel() = originalCall.cancel()
+
+    override fun clone() = this
 
     override fun execute(): Response<B> {
         val response = originalCall.execute()
@@ -13,4 +19,14 @@ class FlatMapCall<A, B>(
                 { f(it.body).execute() }
         )
     }
+
+    override val cancelled: Boolean
+        get() = originalCall.cancelled
+
+    override val executed: Boolean
+        get() = originalCall.executed
+
+    override val request: Request
+        get() = originalCall.request
+
 }

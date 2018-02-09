@@ -1,8 +1,14 @@
 package com.danielecampogiani.funfit
 
+import okhttp3.Request
+
 class SimpleCall<A>(
         private val retrofitCall: retrofit2.Call<A>
 ) : Call<A> {
+
+    override fun cancel() = retrofitCall.cancel()
+
+    override fun clone() = SimpleCall(retrofitCall.clone())
 
     override fun execute(): Response<A> {
         val response = retrofitCall.execute()
@@ -13,5 +19,13 @@ class SimpleCall<A>(
         }
     }
 
+    override val cancelled: Boolean
+        get() = retrofitCall.isCanceled
+
+    override val executed: Boolean
+        get() = retrofitCall.isExecuted
+
+    override val request: Request
+        get() = retrofitCall.request()
 
 }
