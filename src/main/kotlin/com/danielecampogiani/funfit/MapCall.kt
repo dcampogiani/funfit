@@ -15,6 +15,15 @@ class MapCall<A, B>(
         return response.map(f)
     }
 
+    override fun executeAsync(onResponse: (Call<B>, Response<B>) -> Unit, onFailure: (Call<B>, Throwable) -> Unit) {
+        originalCall.executeAsync({ _, response ->
+            onResponse(this, response.map(f))
+        }, { _, throwable ->
+            onFailure(this, throwable)
+        })
+    }
+
+
     override val cancelled: Boolean
         get() = originalCall.cancelled
 

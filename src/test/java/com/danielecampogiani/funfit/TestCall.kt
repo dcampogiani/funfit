@@ -3,11 +3,48 @@ package com.danielecampogiani.funfit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
 
 
 class TestCall {
 
     val api: GitHubAPI = Retrofit.instance.create(GitHubAPI::class.java)
+
+    val dcampogiani = User("dcampogiani", "https://api.github.com/users/dcampogiani/followers")
+
+    @Test
+    fun executeSuccess() {
+        val call = api.getUser("dcampogiani")
+        val response = call.execute()
+
+        response.fold(
+                { fail() },
+                { assertEquals(dcampogiani, it.body) })
+
+    }
+
+    @Test
+    fun executeAsyncSuccess() {
+        val latch = CountDownLatch(1)
+
+        val call = api.getUser("dcampogiani")
+        call.executeAsync(
+                onResponse = { _, response ->
+                    response.fold(
+                            { fail() },
+                            {
+                                assertEquals(dcampogiani, it.body)
+                                latch.countDown()
+                            })
+                },
+                onFailure = { _, _ ->
+                    latch.countDown()
+                    fail()
+                }
+        )
+
+        latch.await()
+    }
 
     @Test
     fun mapSuccess() {

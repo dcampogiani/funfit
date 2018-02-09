@@ -8,6 +8,8 @@ interface Call<A> {
 
     fun execute(): Response<A>
 
+    fun executeAsync(onResponse: (Call<A>, Response<A>) -> Unit, onFailure: (Call<A>, Throwable) -> Unit)
+
     val cancelled: Boolean
 
     val executed: Boolean
